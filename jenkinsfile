@@ -1,33 +1,16 @@
 pipeline {
-  agent {
-        docker { 
-            image 'alpine'
+   agent {
+        label 'master'
         }
-    }
-  stages {
-        stage("Initial config") {
+   stages {
+        stage("Pull and run docker 07.belhard and output docker ps -a") {
             steps {
-                script {
-                    properties([pipelineTriggers([pollSCM('* * * * *')])])
-                }
-            }
-        }
-        stage("Checkout Git") {
-            steps {
-                git branch: 'bh-devops-01-22', url: 'https://github.com/klimoffgod/belhard-devops.git' 
-            }
-        }
-        stage("List repository") {
-            steps {
-                sh '''
-                ls -la
-                '''
-            }
-        }
-    }
-    post { 
-        always { 
-            cleanWs()
-        }
-    }
+            sh '''
+            docker pull klimoff/belhard:latest
+            docker run klimoff/belhard:latest
+            docker ps -a
+            '''
+          }
+      }
+   }
 }
